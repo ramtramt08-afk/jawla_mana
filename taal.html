@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>نظم وقتك صح بالقروب الصح</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent: #00ffd5;
+  --bg1: #07060a;
+  --bg2: #0f1720;
+  --card: rgba(255,255,255,0.04);
+  --muted: #b9c6cc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Cairo',sans-serif;
+  background: radial-gradient(1200px 600px at 10% 10%, #07142a 0%, transparent 20%),
+              linear-gradient(135deg,#081123 0%, #122033 50%, #1d3446 100%);
+  color:#eef6f5;
+  -webkit-font-smoothing:antialiased;
+}
+.header{
+  padding:34px 18px 6px;
+  text-align:center;
+}
+.header h1{margin:0;font-size:28px;letter-spacing:0.6px}
+.header p{margin:8px 0 0;color:var(--muted);font-size:14px}
+.header a{color:var(--accent);text-decoration:none;font-weight:700}
+.container{max-width:1100px;margin:20px auto;padding:18px}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+.card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 30px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
+.section-title{color:var(--accent);margin:0 0 8px;font-weight:700}
+.form-row{display:flex;gap:8px}
+input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+button{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+.small{font-size:13px;color:var(--muted)}
+.list{max-height:420px;overflow:auto;margin-top:8px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;margin:8px 0;background:rgba(0,0,0,0.25);border-left:4px solid rgba(0,0,0,0.1)}
+.item .meta{color:var(--muted);font-size:13px}
+.tag{padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.25);font-size:13px}
+.controls{display:flex;gap:8px}
+.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+.badge{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:var(--muted);font-size:13px}
+.timer{font-weight:700;color:var(--accent)}
+@media(max-width:980px){.grid{grid-template-columns:1fr;}
+  .container{padding:12px}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>نظم وقتك صح بالقروب الصح</h1>
+  <p>التطبيق الرسمي لقروب التوجيهي — <a href="https://t.me/Jordanian_Tawjihi_2008" target="_blank">قروب التوجيهي</a> • تواصل المدير: <a href="https://t.me/R_0_T_8" target="_blank">@R_0_T_8</a></p>
+</div>
+
+<div class="container">
+  <div class="grid">
+    <div>
+      <!-- login / main area -->
+      <div class="card" id="panelLogin">
+        <h3 class="section-title">الدخول السريع (باسم + كود)</h3>
+        <p class="small">لا حاجة لإيميل أو كلمة سر. استخدم الكود الخاص بك للانضمام سريعاً.</p>
+        <div style="margin-top:12px">
+          <input id="nameField" placeholder="اسمك (مثال: محمد)" />
+          <input id="codeField" placeholder="كود الدخول (مثال: 2008)" style="margin-top:8px" />
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="btnLogin">دخول</button>
+            <button id="btnGuest">تجربة كزائر</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card hidden" id="panelRounds">
+        <h3 class="section-title">الجولات الحالية</h3>
+        <div class="small">انضم للجولة ثم أضف مهامك. المدراء والأدمن يمكنهم إنشاء جولات.</div>
+        <div style="margin-top:12px" id="roundList"></div>
+      </div>
+
+      <div class="card hidden" id="panelTasks">
+        <h3 class="section-title">المهام (الجولة الحالية)</h3>
+        <div class="small">أضف مهمة وحدد المادة — كل طالب يرى مهامه الخاصة، والأدمن/المدير يرى الكل.</div>
+        <div style="margin-top:12px">
+          <select id="selectRound"></select>
+          <input id="subjectField" placeholder="المادة (مثال: كيمياء)" style="margin-top:8px" />
+          <textarea id="taskField" placeholder="اكتب مهمتك هنا" rows="2" style="margin-top:8px"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="btnAddTask">أضف المهمة</button>
+            <div class="badge" id="joinedBadge">لم تنضم بعد</div>
+          </div>
+        </div>
+
+        <div class="list" id="myTaskList"></div>
+      </div>
+
+      <div class="card hidden" id="panelAdminTools">
+        <h3 class="section-title">أدوات الإدارة</h3>
+        <div class="small">المدير يمكنه تغيير أكواد الدخول، رفع أدمن، وإنشاء جولات.</div>
+
+        <div style="margin-top:12px">
+          <div class="form-row">
+            <input id="newRoundName" placeholder="اسم الجولة (مثال: جولة صباحية)" />
+            <input id="newRoundTime" placeholder="مدة الجولة بالدقائق (مثال: 60)" />
+            <input id="breakMinutes" placeholder="مدة الاستراحة بالدقائق (مثال: 5)" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="btnCreateRound">إنشاء جولة</button>
+          </div>
+
+          <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)" />
+
+          <div class="small">أكواد الدخول (يمكن تغيّرها هنا)</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="codeStudent" placeholder="كود الطالب" />
+            <input id="codeAdmin" placeholder="كود الأدمن" />
+            <input id="codeManager" placeholder="كود المدير" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="btnSaveCodes">حفظ الأكواد</button>
+            <button id="btnListUsers">عرض المستخدمين</button>
+          </div>
+
+          <div id="adminUserList" style="margin-top:10px"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <aside>
+      <div class="card">
+        <h4 class="section-title">الحالة الآن</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+          <div>الدور: <span id="currentRole" class="tag">غير متصل</span></div>
+          <div>الاسم: <span id="currentName" class="tag">—</span></div>
+          <div>الجولة المفتوحة: <span id="activeRound" class="tag">—</span></div>
+          <div>الوقت المتبقي: <span id="roundTimer" class="timer">—</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h4 class="section-title">المهام العامة</h4>
+        <div id="allTasksList" class="list"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px;text-align:center">
+        <div class="small">انضم لقروب التوجيهي</div>
+        <a href="https://t.me/Jordanian_Tawjihi_2008" target="_blank" class="badge" style="display:inline-block;margin-top:10px">رابط القروب على تيليجرام</a>
+        <div class="footer" style="margin-top:12px">© نظم وقتك صح</div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ----  ضع هنا معلومات Firebase بعد إنشاء المشروع ----
+const firebaseConfig = {
+  apiKey: "PUT_API_KEY",
+  authDomain: "PUT_AUTH_DOMAIN",
+  databaseURL: "PUT_DB_URL",
+  projectId: "PUT_PROJECT_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// عناصر
+const panelLogin = document.getElementById('panelLogin');
+const panelRounds = document.getElementById('panelRounds');
+const panelTasks = document.getElementById('panelTasks');
+const panelAdminTools = document.getElementById('panelAdminTools');
+const nameField = document.getElementById('nameField');
+const codeField = document.getElementById('codeField');
+const btnLogin = document.getElementById('btnLogin');
+const btnGuest = document.getElementById('btnGuest');
+const selectRound = document.getElementById('selectRound');
+const roundList = document.getElementById('roundList');
+const myTaskList = document.getElementById('myTaskList');
+const allTasksList = document.getElementById('allTasksList');
+const currentRole = document.getElementById('currentRole');
+const currentName = document.getElementById('currentName');
+const activeRound = document.getElementById('activeRound');
+const roundTimer = document.getElementById('roundTimer');
+
+const btnAddTask = document.getElementById('btnAddTask');
+const subjectField = document.getElementById('subjectField');
+const taskField = document.getElementById('taskField');
+
+const btnCreateRound = document.getElementById('btnCreateRound');
+const newRoundName = document.getElementById('newRoundName');
+const newRoundTime = document.getElementById('newRoundTime');
+const codeStudent = document.getElementById('codeStudent');
+const codeAdmin = document.getElementById('codeAdmin');
+const codeManager = document.getElementById('codeManager');
+const btnSaveCodes = document.getElementById('btnSaveCodes');
+const adminUserList = document.getElementById('adminUserList');
+const btnListUsers = document.getElementById('btnListUsers');
+
+let state = {role:'guest', name:null, sessionId:null, joinedRound:null, timerHandle:null};
+
+// Default codes (if DB empty)
+const DEFAULT_CODES = {student:'Rayan08', admin:'RayanAdmin', manager:'anahon'};
+
+// --- init: ensure codes exist in DB ---
+function ensureCodes(){
+  db.ref('settings/codes').once('value',snap=>{
+    if(!snap.exists()) db.ref('settings/codes').set(DEFAULT_CODES);
+    else{
+      const c = snap.val();
+      codeStudent.value = c.student; codeAdmin.value = c.admin; codeManager.value = c.manager;
+    }
+  });
+}
+ensureCodes();
+
+// listen for codes changes
+db.ref('settings/codes').on('value',snap=>{
+  const c = snap.val();
+  if(c){ codeStudent.value = c.student; codeAdmin.value = c.admin; codeManager.value = c.manager; }
+});
+
+// login
+btnLogin.addEventListener('click',()=>{
+  const name = (nameField.value||'').trim();
+  const code = (codeField.value||'').trim();
+  if(!name || !code) return alert('أدخل الاسم والكود');
+
+  db.ref('settings/codes').once('value',snap=>{
+    const codes = snap.val() || DEFAULT_CODES;
+    if(code === codes.manager) doLogin(name,'manager');
+    else if(code === codes.admin) doLogin(name,'admin');
+    else if(code === codes.student) doLogin(name,'student');
+    else alert('كود غير صحيح');
+  });
+});
+
+btnGuest.addEventListener('click',()=>{
+  doLogin('زائر','student');
+});
+
+function doLogin(name,role){
+  state.name = name; state.role = role; state.sessionId = 's_'+Date.now();
+  currentRole.textContent = role; currentName.textContent = name;
+  panelLogin.classList.add('hidden');
+  panelRounds.classList.remove('hidden');
+  panelTasks.classList.remove('hidden');
+  if(role==='admin' || role==='manager') panelAdminTools.classList.remove('hidden');
+  loadRounds(); loadSelectRounds(); loadAllTasks(); loadMyTasks();
+}
+
+// create round (مع وقت واستراحة)
+btnCreateRound.addEventListener('click',()=>{
+  const name = (newRoundName.value||'').trim();
+  const minutes = parseInt(newRoundTime.value)||0;
+  const breakMin = parseInt(document.getElementById('breakMinutes')?.value)||5;
+  if(!name || !minutes) return alert('ادخل اسم ومدة صحيحة');
+  const id = 'r_'+Date.now();
+  const now = Date.now();
+  db.ref('rounds/'+id).set({name,minutes,breakMin,createdAt:now,active:false});
+  newRoundName.value=''; newRoundTime.value='';
+});
+});
+
+// save codes
+btnSaveCodes.addEventListener('click',()=>{
+  const s=codeStudent.value.trim(), a=codeAdmin.value.trim(), m=codeManager.value.trim();
+  if(!s||!a||!m) return alert('أدخل جميع الأكواد');
+  db.ref('settings/codes').set({student:s,admin:a,manager:m});
+  alert('تم حفظ الأكواد');
+});
+
+// load rounds list
+function loadRounds(){
+  db.ref('rounds').on('value',snap=>{
+    let html='';
+    const data=snap.val()||{};
+    Object.keys(data).sort().reverse().forEach(id=>{
+      const r=data[id];
+      const status = r.active? '<span class="badge">مفتوحة</span>':'<span class="badge">مقفلة</span>';
+      html += `<div class="item"><div><div style=\"font-weight:700\">${r.name}</div><div class=\"meta\">${r.minutes} دقيقة</div></div><div class=\"controls\">${status} ${r.active? `<button onclick=\"joinRound('${id}')\">انضم</button>`: (state.role==='manager'||state.role==='admin' ? `<button onclick=\"openRound('${id}')\">فتح</button>`:'')}</div></div>`;
+    });
+    roundList.innerHTML = html || '<div class="small">لا توجد جولات</div>';
+  });
+}
+
+// load rounds for select
+function loadSelectRounds(){
+  db.ref('rounds').once('value',snap=>{
+    const data = snap.val()||{}; selectRound.innerHTML='';
+    Object.keys(data).forEach(id=>{ const r = data[id]; const opt = document.createElement('option'); opt.value=id; opt.textContent = r.name + ' — ' + r.minutes + ' د'; selectRound.appendChild(opt); });
+  });
+}
+
+// open round (manager/admin)
+function openRound(id){
+  db.ref('rounds/'+id).once('value',snap=>{
+    const r = snap.val();
+    if(!r) return;
+    const start = Date.now();
+    db.ref('rounds/'+id+'/active').set(true);
+    db.ref('rounds/'+id+'/startedAt').set(start);
+    // set auto close
+    db.ref('rounds/'+id+'/endsAt').set(start + r.minutes*60000);
+  });
+}
+
+// join round
+function joinRound(id){
+  state.joinedRound = id; db.ref('sessions/'+state.sessionId).set({name:state.name,role:state.role,joinedRound:id,ts:Date.now()});
+  document.getElementById('joinedBadge').textContent = 'منضم';
+  // start timer display
+  db.ref('rounds/'+id).on('value',snap=>{
+    const r=snap.val(); if(!r) return;
+    if(r.endsAt){
+      updateTimer(r.endsAt);
+    }
+    activeRound.textContent = r.name;
+  });
+}
+
+function updateTimer(endsAt, breakMin=0){
+  if(state.timerHandle) clearInterval(state.timerHandle);
+  let breakStarted=false;
+  function tick(){
+    const now=Date.now();
+    let diff=endsAt-now;
+    if(diff<=0 && !breakStarted && breakMin>0){
+      breakStarted=true;
+      playSound();
+      const breakEnd=now + breakMin*60000;
+      endsAt=breakEnd;
+      activeRound.textContent += ' (استراحة)';
+      return;
+    }
+    if(diff<=0 && breakStarted){
+      roundTimer.textContent='انتهت الجولة';
+      playSound();
+      clearInterval(state.timerHandle);
+      return;
+    }
+    const m=Math.floor(diff/60000);
+    const s=Math.floor((diff%60000)/1000);
+    roundTimer.textContent=`${m}m ${s}s`;
+  }
+  tick();
+  state.timerHandle=setInterval(tick,1000);
+}
+
+function playSound(){
+  const audio=new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+  audio.play();
+}
+    const m = Math.floor(diff/60000); const s = Math.floor((diff%60000)/1000);
+    roundTimer.textContent = `${m}m ${s}s`;
+  }
+  tick(); state.timerHandle = setInterval(tick,1000);
+}
+
+// add task
+btnAddTask.addEventListener('click',()=>{
+  const subject = (subjectField.value||'').trim();
+  const task = (taskField.value||'').trim();
+  const roundId = selectRound.value;
+  if(!subject||!task||!roundId) return alert('اكمل الحقول واختر جولة');
+  db.ref('tasks').push({roundId,subject,task,name:state.name,done:false,ts:Date.now()});
+  subjectField.value=''; taskField.value='';
+});
+
+// load my tasks
+function loadMyTasks(){
+  db.ref('tasks').on('value',snap=>{
+    const data = snap.val()||{}; let html='';
+    Object.keys(data).reverse().forEach(k=>{ const t=data[k]; if(t.name===state.name){ html += `<div class=\"item\"> <div><div style=\"font-weight:700\">${t.subject}</div><div class=\"meta\">${t.task}</div></div><div class=\"controls\">${t.done?'<span class=\\"tag\\">منجز</span>':'<button onclick=\\"markDone(\\\"'+k+'\\\")\\">انجز</button>'}</div></div>`; }});
+    myTaskList.innerHTML = html || '<div class="small">لا مهام بعد</div>';
+  });
+}
+
+function markDone(taskId){ db.ref('tasks/'+taskId+'/done').set(true); }
+
+// load all tasks (for admin)
+function loadAllTasks(){
+  db.ref('tasks').on('value',snap=>{
+    const data = snap.val()||{}; let html='';
+    Object.keys(data).reverse().forEach(k=>{ const t=data[k];
+      html += `<div class=\"item\"><div><div style=\"font-weight:700\">${t.name} — ${t.subject}</div><div class=\"meta\">${t.task}</div></div><div class=\"controls\">${t.done?'<span class=\\"tag\\">منجز</span>':'<button onclick=\\"adminMarkDone(\\\"'+k+'\\\")\\">انجز</button>'} ${state.role==='manager'?`<button onclick=\"penalize('`+t.name+`')\">عقوبة</button>`:''}</div></div>`;
+    });
+    allTasksList.innerHTML = html || '<div class="small">لا مهام</div>';
+  });
+}
+
+function adminMarkDone(id){ db.ref('tasks/'+id+'/done').set(true); }
+function penalize(name){ const p = prompt('اكتب عقوبة لـ '+name); if(p) db.ref('penalties').push({name,penalty:p,ts:Date.now()}); }
+
+// show users
+btnListUsers.addEventListener('click',()=>{
+  db.ref('sessions').once('value',snap=>{
+    const s=snap.val()||{}; let html=''; Object.keys(s).forEach(k=>{ html += `<div class=\"item\"><div>${s[k].name}</div><div class=\"meta\">${s[k].role}</div></div>` }); adminUserList.innerHTML = html || '<div class="small">لا مستخدمين</div>';
+  });
+});
+
+// load global tasks list (all)
+function loadAllTasks(){
+  db.ref('tasks').on('value',snap=>{
+    const data=snap.val()||{}; let html=''; Object.keys(data).reverse().forEach(k=>{ const t=data[k]; html += `<div class=\"item\"><div><div style=\"font-weight:700\">${t.name}</div><div class=\"meta\">${t.subject} - ${t.task}</div></div></div>`; }); allTasksList.innerHTML = html || '<div class="small">لا مهام عامة</div>';
+  });
+}
+
+// initial load
+loadRounds(); loadSelectRounds(); loadAllTasks();
+
+</script>
+</body>
+</html>
