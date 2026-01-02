@@ -1,1 +1,0 @@
-# jawla_mana
